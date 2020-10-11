@@ -21,13 +21,13 @@
 
   <meta name="description" content="体积光原理体积光是空气中介质对光进行散射所形成的一种现象。散射可分为瑞利散射和米氏散射，瑞利散射针对介质颗粒大小远小于光波长的情况，米氏散射针对介质颗粒大小接近光波长的情况。 图1 算法以观察到的物体表面一点为起点，观察位置点为终点做一个射线，则物体表面到观察位置这之间就有一个体积，针对物体表面每一点到观察位置的射线，计算射线上每一点处介质散射出的光强然后累加，最终可以的到该物体与观察位置之间这块">
 <meta property="og:type" content="article">
-<meta property="og:title" content="volumetricLight">
+<meta property="og:title" content="体积光">
 <meta property="og:url" content="http://yoursite.com/2020/04/23/volumetricLight/index.html">
 <meta property="og:site_name" content="ZxPiano">
 <meta property="og:description" content="体积光原理体积光是空气中介质对光进行散射所形成的一种现象。散射可分为瑞利散射和米氏散射，瑞利散射针对介质颗粒大小远小于光波长的情况，米氏散射针对介质颗粒大小接近光波长的情况。 图1 算法以观察到的物体表面一点为起点，观察位置点为终点做一个射线，则物体表面到观察位置这之间就有一个体积，针对物体表面每一点到观察位置的射线，计算射线上每一点处介质散射出的光强然后累加，最终可以的到该物体与观察位置之间这块">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2020-04-23T12:50:58.068Z">
-<meta property="article:modified_time" content="2020-04-21T02:56:14.319Z">
+<meta property="article:modified_time" content="2020-10-11T14:47:51.222Z">
 <meta property="article:author" content="ZxPiano">
 <meta name="twitter:card" content="summary">
 
@@ -44,7 +44,7 @@
   };
 </script>
 
-  <title>volumetricLight | ZxPiano</title>
+  <title>体积光 | ZxPiano</title>
   
 
 
@@ -163,7 +163,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          volumetricLight
+          体积光
         </h1>
 
         <div class="post-meta">
@@ -180,7 +180,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-04-21 10:56:14" itemprop="dateModified" datetime="2020-04-21T10:56:14+08:00">2020-04-21</time>
+                <time title="Modified: 2020-10-11 22:47:51" itemprop="dateModified" datetime="2020-10-11T22:47:51+08:00">2020-10-11</time>
               </span>
 
           
@@ -229,8 +229,8 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/04/23/SurfaceCurveFunc/" rel="prev" title="SurfaceCurveFunc">
-      <i class="fa fa-chevron-left"></i> SurfaceCurveFunc
+    <a href="/2020/04/23/SurfaceCurveFunc/" rel="prev" title="曲面/曲线 方程">
+      <i class="fa fa-chevron-left"></i> 曲面/曲线 方程
     </a></div>
       <div class="post-nav-item">
     <a href="/2020/03/28/zTest/" rel="next" title="zTest">
@@ -309,7 +309,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">4</span>
+          <span class="site-state-item-count">5</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -410,6 +410,61 @@
   
 
   
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
 
   
 

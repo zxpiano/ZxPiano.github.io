@@ -21,13 +21,13 @@
 
   <meta name="description" content="曲面球面(x-x0)^{2}+(y-y0)^{2}+(z-z0)^{2}&#x3D;r^{2}\cdots (1-1)其中\((x0,y0,z0)\)为球心位置，\(r\)为半径 平面&#x2F;圆面平面法线\(\overrightarrow{n}\)，则平面方程： ((x-x0),(y-y0),(z-z0))\cdot \overrightarrow{n}&#x3D;0\cdots (1-2)联合(1-1)(1-2)式可得空">
 <meta property="og:type" content="article">
-<meta property="og:title" content="SurfaceCurveFunc">
+<meta property="og:title" content="曲面&#x2F;曲线 方程">
 <meta property="og:url" content="http://yoursite.com/2020/04/23/SurfaceCurveFunc/index.html">
 <meta property="og:site_name" content="ZxPiano">
 <meta property="og:description" content="曲面球面(x-x0)^{2}+(y-y0)^{2}+(z-z0)^{2}&#x3D;r^{2}\cdots (1-1)其中\((x0,y0,z0)\)为球心位置，\(r\)为半径 平面&#x2F;圆面平面法线\(\overrightarrow{n}\)，则平面方程： ((x-x0),(y-y0),(z-z0))\cdot \overrightarrow{n}&#x3D;0\cdots (1-2)联合(1-1)(1-2)式可得空">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2020-04-23T12:50:58.068Z">
-<meta property="article:modified_time" content="2020-04-21T04:03:51.942Z">
+<meta property="article:modified_time" content="2020-10-11T14:47:25.707Z">
 <meta property="article:author" content="ZxPiano">
 <meta name="twitter:card" content="summary">
 
@@ -44,7 +44,7 @@
   };
 </script>
 
-  <title>SurfaceCurveFunc | ZxPiano</title>
+  <title>曲面/曲线 方程 | ZxPiano</title>
   
 
 
@@ -163,7 +163,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          SurfaceCurveFunc
+          曲面/曲线 方程
         </h1>
 
         <div class="post-meta">
@@ -180,7 +180,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-04-21 12:03:51" itemprop="dateModified" datetime="2020-04-21T12:03:51+08:00">2020-04-21</time>
+                <time title="Modified: 2020-10-11 22:47:25" itemprop="dateModified" datetime="2020-10-11T22:47:25+08:00">2020-10-11</time>
               </span>
 
           
@@ -213,10 +213,13 @@
 
         
     <div class="post-nav">
-      <div class="post-nav-item"></div>
       <div class="post-nav-item">
-    <a href="/2020/04/23/volumetricLight/" rel="next" title="volumetricLight">
-      volumetricLight <i class="fa fa-chevron-right"></i>
+    <a href="/2020/10/11/depth/" rel="prev" title="深度 / depth / Z">
+      <i class="fa fa-chevron-left"></i> 深度 / depth / Z
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/04/23/volumetricLight/" rel="next" title="体积光">
+      体积光 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -291,7 +294,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">4</span>
+          <span class="site-state-item-count">5</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -392,6 +395,61 @@
   
 
   
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
 
   
 
