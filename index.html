@@ -358,10 +358,16 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2020-10-11 22:45:00 / Modified: 22:45:52" itemprop="dateCreated datePublished" datetime="2020-10-11T22:45:00+08:00">2020-10-11</time>
+              <time title="Created: 2020-10-11 22:45:00" itemprop="dateCreated datePublished" datetime="2020-10-11T22:45:00+08:00">2020-10-11</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-11-14 16:20:35" itemprop="dateModified" datetime="2020-11-14T16:20:35+08:00">2020-11-14</time>
+              </span>
 
           
 
@@ -374,7 +380,25 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="深度"><a href="#深度" class="headerlink" title="深度"></a>深度</h2>
+          <h2 id="深度"><a href="#深度" class="headerlink" title="深度"></a>深度</h2><p>Unity中，透视投影，观察空间变换到裁剪空间后，深度值会变成非线性的。计算过程如下。</p>
+<script type="math/tex; mode=display">{z}' = -z\frac{(F+N)}{F-N} - \frac{2\cdot N\cdot F}{F-N}</script><p>其中${z}’$为裁剪空间的深度值，$z$为观察空间的深度值，$F$为远裁剪面，$N$为近裁剪面。</p>
+<p>裁剪空间到屏幕空间会进行一次透视除法，再做一次缩放平移，所以在计算中最终会用到的clipPos.z（片段着色器中）最终为：</p>
+<script type="math/tex; mode=display">clipZ = (\frac{(F+N)}{F-N} - \frac{2\cdot N\cdot F}{(F-N)\cdot z})\cdot 0.5 + 0.5</script><p>取《Shader入门精要》的案例，F=40，N=5<br>如图，紫线为最终结果，可以看到clipZ是非线性的，值域在（0，1）。横轴为观察空间Z值，为负数；纵轴为屏幕空间Z值</p>
+<p><img src="/images/depth/depth0.jpg" alt=""></p>
+<hr>
+<p>Unity Shader的计算中，涉及到深度的计算，通常会用到<strong>LinearEyeDepth</strong>和<strong>Linear01Depth</strong>，<strong>LinearEyeDepth</strong>的计算为：</p>
+<script type="math/tex; mode=display">z = \frac{1}{\frac{1-\frac{F}{N}}{F}\cdot z+\frac{\frac{F}{N}}{F}}</script><p>开启UNITY_REVERSED_Z时（UNITY_REVERSED_Z表示$z = 1-z$,用于调和float的存储精度以及非线性的z值分布，使存储的z值更精确，减轻z-fightingh问题），计算方式为：</p>
+<script type="math/tex; mode=display">z = \frac{1}{\frac{-1+\frac{F}{N}}{F}\cdot z+\frac{1}{F}}</script><p>两者实际效果是一样的，区别在于输入的$z$是不是反转的。</p>
+<p>如图，蓝线为最终结果，输入为紫线的值，可以看到<strong>LinearEyeDepth</strong>将紫线变为线性的，并且值域为（$N$，$F$）,深度0的位置在相机位置。</p>
+<p><img src="/images/depth/depth1.png" alt=""></p>
+<hr>
+<p><strong>Linear01Depth</strong>的计算为：</p>
+<script type="math/tex; mode=display">z = \frac{1}{({1-\frac{F}{N}})\cdot z + \frac{F}{N}}</script><p>开启UNITY_REVERSED_Z时，计算方式为：</p>
+<script type="math/tex; mode=display">z = \frac{1}{({-1+\frac{F}{N}})\cdot z + 1}</script><p>两者实际效果是一样的，区别在于输入的$z$是不是反转的。</p>
+<p>如图，绿线为最终结果，输入为紫线的值，可以看到<strong>Linear01Depth</strong>将紫线变为线性的，并且值域为（0.125，1），深度0的位置在相机位置。</p>
+<p><img src="/images/depth/depth2.png" alt=""></p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p>《Unity Shader入门精要》 冯乐乐</p>
+
       
     </div>
 
@@ -577,7 +601,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-29 17:58:28" itemprop="dateModified" datetime="2020-03-29T17:58:28+08:00">2020-03-29</time>
+                <time title="Modified: 2020-11-14 14:46:24" itemprop="dateModified" datetime="2020-11-14T14:46:24+08:00">2020-11-14</time>
               </span>
 
           
@@ -636,7 +660,7 @@
 <script type="math/tex; mode=display">y=2 \times x</script><script type="math/tex; mode=display">\int_{\Omega}^{0} (x+1) dx</script><script type="math/tex; mode=display">f\left ( x \right )=\sum_{m}^{n} \oint_{\mathbb{P} }^{nil} {x_{a}}^{b} \sin y</script><h3 id="上下标"><a href="#上下标" class="headerlink" title="上下标"></a>上下标</h3><p>上标: $x^2$</p>
 <p>下标: $x_1$</p>
 <p>组合: <script type="math/tex">{16}_{8}O{2+}_{2}</script></p>
-<h3 id="希腊字母"><a href="#希腊字母" class="headerlink" title="希腊字母"></a>希腊字母</h3><p>$\alpha ,\beta ,\gamma ,\delta ,\epsilon ,\varepsilon ,\zeta ,\eta ,\theta ,\vartheta ,\iota ,\kappa ,\lambda ,\mu ,\nu ,\xi ,\pi ,\varpi ,\rho ,\varrho ,\sigma ,\varsigma ,\tau ,\upsilon ,\phi ,\varphi ,\chi ,\psi ,\omega ,\Gamma ,\Delta ,\Theta ,\Lambda ,\Xi ,\Pi ,\Sigma ,\Upsilon \Phi ,\Psi ,\Omega $</p>
+<h3 id="希腊字母"><a href="#希腊字母" class="headerlink" title="希腊字母"></a>希腊字母</h3><p>$\alpha ,\beta ,\gamma ,\delta ,\epsilon ,\varepsilon ,\zeta ,\eta ,\theta ,\vartheta ,\iota ,\kappa ,\lambda ,\mu ,\nu ,\xi ,\pi ,\varpi ,\rho ,\varrho ,\sigma ,\varsigma ,\tau ,\upsilon ,\phi ,\varphi ,\chi ,\psi ,\omega ,\Gamma ,\Delta ,\Theta ,\Lambda ,\Xi ,\Pi ,\Sigma ,\Upsilon, \Phi ,\Psi ,\Omega $</p>
 
       
     </div>
