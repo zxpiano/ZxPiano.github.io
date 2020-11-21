@@ -351,7 +351,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-11-08 22:55:52" itemprop="dateModified" datetime="2020-11-08T22:55:52+08:00">2020-11-08</time>
+                <time title="Modified: 2020-11-21 17:01:14" itemprop="dateModified" datetime="2020-11-21T17:01:14+08:00">2020-11-21</time>
               </span>
 
           
@@ -374,6 +374,7 @@
 <h3 id="渲染相机"><a href="#渲染相机" class="headerlink" title="渲染相机"></a>渲染相机</h3><p>Context的命令只是缓冲，需要提交才会执行</p>
 <p>commandBuffer 执行命令进行两次，设置时执行一次，提交前执行一次（此处的执行是一个命令，但并未真的执行，在提交后才会执行）</p>
 <p>Draw GL 项代表绘制一个全屏幕的使用Hidden/InternalClear Shader的quad 到渲染目标，先设置相机属性，在清理渲染目标，可以快速清理。</p>
+<p>多相机，每帧渲染一台以上的摄像机意味着必须同时进行多次剔除，设置，分类等操作</p>
 
       
     </div>
@@ -575,7 +576,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-10-11 22:47:51" itemprop="dateModified" datetime="2020-10-11T22:47:51+08:00">2020-10-11</time>
+                <time title="Modified: 2020-11-21 23:49:17" itemprop="dateModified" datetime="2020-11-21T23:49:17+08:00">2020-11-21</time>
               </span>
 
           
@@ -590,9 +591,9 @@
 
       
           <h2 id="体积光"><a href="#体积光" class="headerlink" title="体积光"></a>体积光</h2><h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>体积光是空气中介质对光进行散射所形成的一种现象。散射可分为瑞利散射和米氏散射，瑞利散射针对介质颗粒大小远小于光波长的情况，米氏散射针对介质颗粒大小接近光波长的情况。</p>
-<p>图1</p>
+<p><img src="https://tvax3.sinaimg.cn/large/bd728842gy1gkx84pj7gij20m60gmgqa.jpg" alt=""><br>图1</p>
 <h3 id="算法"><a href="#算法" class="headerlink" title="算法"></a>算法</h3><p>以观察到的物体表面一点为起点，观察位置点为终点做一个射线，则物体表面到观察位置这之间就有一个体积，针对物体表面每一点到观察位置的射线，计算射线上每一点处介质散射出的光强然后累加，最终可以的到该物体与观察位置之间这块体积产生的体积光</p>
-<p>图2</p>
+<p><img src="https://tvax1.sinaimg.cn/large/bd728842gy1gkx84ttmdnj20cn085mxo.jpg" alt=""><br>图2</p>
 <p>如图2所示，O点为物体表面一点，C点为观察位置点，计算OC连线上每一点的介质散射出的光强并累加则为OC上的体积光。</p>
 <p>OC连线上每一点P处的光强与该点到光源的距离平方成反比，即</p>
 <script type="math/tex; mode=display">dL=\frac{L}{\left |PA  \right |^{2}}</script><p>其中\(A\)点为光源位置，\(\left |PA  \right |\)为\(P\)点到光源的距离，\(L\)为光源发出的光强。</p>
@@ -602,10 +603,12 @@
 <script type="math/tex; mode=display">IsInLight = step(cos(\alpha) ,cos(\angle PAA'))</script><p>再细腻一点可以考虑到介质的透光率，即介质吸收光照与透过光照的比率，采用Beer–Lambert定律：</p>
 <script type="math/tex; mode=display">Iout = Iin\times exp(-c\times d)</script><p>其中\(Iin\)为光入射到介质的光强，\(Iout\)为光通过介质后的光强，\(c\)为介质的密度，\(d\)为光穿过介质的厚度。</p>
 <p>再考虑到阴影，还需要判断\(P\)点是否处于阴影当中。通过制作体积光源处的阴影贴图，再比较\(P\)点转到体积光源的透视空间后其深度是否大于阴影贴图对应位置的深度来判断\(P\)点是否位于阴影中。</p>
-<p>图3</p>
+<p><img src="https://tvax3.sinaimg.cn/large/bd728842gy1gkx84wcgxmj20fe08qdgc.jpg" alt=""><br>图3</p>
 <p>综上，C点接收到的光强为：</p>
 <script type="math/tex; mode=display">L = \int_{O}^{C}(\frac{L}{\left | PA \right |^{2}}\times \rho Mie\times IsInLight\times Iout\times IsInShadow)ds</script><p>由于\(IsInlight\)和\(IsInShadow\)是分段函数，因此上式积分不能写为解析形式，所以在实际计算中 会设置采样次数\(m\)，将\(OC\)直线离散为点，于是上式积分写为求和的形式：</p>
-<script type="math/tex; mode=display">L = \sum_{i}^{m} {\frac{L}{\left | PiA \right |^{2}}}\times \rho Mie\times IsInLight\times Iout\times IsInShadow</script><h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><p>[1]    <a href="https://software.intel.com/en-us/articles/ivb-atmospheric-light-scattering" target="_blank" rel="noopener">https://software.intel.com/en-us/articles/ivb-atmospheric-light-scattering</a></p>
+<script type="math/tex; mode=display">L = \sum_{i}^{m} {\frac{L}{\left | PiA \right |^{2}}}\times \rho Mie\times IsInLight\times Iout\times IsInShadow</script><h3 id="Unity实现"><a href="#Unity实现" class="headerlink" title="Unity实现"></a>Unity实现</h3><p><img src="https://tvax1.sinaimg.cn/large/bd728842gy1gkx7bmpmejj20xx0faarq.jpg" alt=""></p>
+<h4 id="工程"><a href="#工程" class="headerlink" title="工程"></a>工程</h4><p><a href="https://github.com/zxpiano/volumetricLight" target="_blank" rel="noopener">体积光工程</a></p>
+<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><p>[1]    <a href="https://software.intel.com/en-us/articles/ivb-atmospheric-light-scattering" target="_blank" rel="noopener">https://software.intel.com/en-us/articles/ivb-atmospheric-light-scattering</a></p>
 <p>[2]    <a href="https://www.shadertoy.com/view/XlBSRz" target="_blank" rel="noopener">https://www.shadertoy.com/view/XlBSRz</a> </p>
 <p>[3]    Real-Time Rendering Fourth Edition (589-616)</p>
 <p>[4] <a href="https://zhuanlan.zhihu.com/p/21425792" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/21425792</a></p>

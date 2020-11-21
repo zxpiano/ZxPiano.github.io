@@ -27,7 +27,7 @@
 <meta property="og:description" content="URPRenderPipelineAsset首先必须为管线创建资产，继承UnityEngine.Rendering空间下的CustomRenderPipelineAsset RP资产的主要目的是为Unity提供一种获取负责渲染的管道对象实例的方式。资产本身只是一个句柄和一个存储设置的地方。 添加[CreateAssetMenu(menuName &#x3D; “Rendering&#x2F;Custom Render">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2020-11-07T10:03:00.000Z">
-<meta property="article:modified_time" content="2020-11-08T14:55:52.970Z">
+<meta property="article:modified_time" content="2020-11-21T09:01:14.650Z">
 <meta property="article:author" content="ZxPiano">
 <meta name="twitter:card" content="summary">
 
@@ -180,7 +180,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-11-08 22:55:52" itemprop="dateModified" datetime="2020-11-08T22:55:52+08:00">2020-11-08</time>
+                <time title="Modified: 2020-11-21 17:01:14" itemprop="dateModified" datetime="2020-11-21T17:01:14+08:00">2020-11-21</time>
               </span>
 
           
@@ -203,6 +203,7 @@
 <h3 id="渲染相机"><a href="#渲染相机" class="headerlink" title="渲染相机"></a>渲染相机</h3><p>Context的命令只是缓冲，需要提交才会执行</p>
 <p>commandBuffer 执行命令进行两次，设置时执行一次，提交前执行一次（此处的执行是一个命令，但并未真的执行，在提交后才会执行）</p>
 <p>Draw GL 项代表绘制一个全屏幕的使用Hidden/InternalClear Shader的quad 到渲染目标，先设置相机属性，在清理渲染目标，可以快速清理。</p>
+<p>多相机，每帧渲染一台以上的摄像机意味着必须同时进行多次剔除，设置，分类等操作</p>
 
     </div>
 
