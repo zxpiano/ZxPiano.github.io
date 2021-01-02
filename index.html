@@ -169,10 +169,16 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2020-11-14 16:30:00 / Modified: 16:30:22" itemprop="dateCreated datePublished" datetime="2020-11-14T16:30:00+08:00">2020-11-14</time>
+              <time title="Created: 2020-11-14 16:30:00" itemprop="dateCreated datePublished" datetime="2020-11-14T16:30:00+08:00">2020-11-14</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-01-02 17:48:24" itemprop="dateModified" datetime="2021-01-02T17:48:24+08:00">2021-01-02</time>
+              </span>
 
           
 
@@ -185,7 +191,23 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="广告牌"><a href="#广告牌" class="headerlink" title="广告牌"></a>广告牌</h2>
+          <h2 id="广告牌"><a href="#广告牌" class="headerlink" title="广告牌"></a>广告牌</h2><p>序列帧动画为连续播放。<br>如何让a内容变到b内容时候停留一段时间，再变到c内容，并在两个内容之间的变换中加一个过渡变化?</p>
+<h3 id="基础数据"><a href="#基础数据" class="headerlink" title="基础数据"></a>基础数据</h3><p>Unity Shader中，去时间_Time.x乘一个速度参数<code>time = _Time.x * speed</code>，方便控制变化速度。以2行2列的图片内容为例，如图1，那么每次采样贴图的时候UV应该落在1、2、3、4区域中的某一个。<br>首先，采样每一小份图片内容的UV尺寸是相同的，为<code>adUVStep = (1.0 / 2.0 (行数), 1.0 / 2.0 (列数) )</code>，并且这个尺寸也是每次变化时UV的步长。初始位置落在1，则初始UV为<code>(uv.x * adUVStep.y, uv.y * adUVStep.x)</code>，（此处uv为模型原始的uv），注意uv横向加的是列数的倒数，纵向加的是行数的倒数<br>其次，变化的次数为<code>step = fmod(time, (行数 * 列数))</code>取整数余，此处整数余为0，1，2，3. </p>
+<p><img src="https://tva1.sinaimg.cn/large/bd728842gy1gm9hd1fq2sj20sg0sgmyk.jpg" alt=""><br>图1</p>
+<h3 id="变换"><a href="#变换" class="headerlink" title="变换"></a>变换</h3><p>先横向还是先纵向影响不大，此文为先横向。</p>
+<h4 id="直接切换"><a href="#直接切换" class="headerlink" title="直接切换"></a>直接切换</h4><p>注意上述在准备基础数据的时候，time是一个浮点值，它是连续变化的，取整数余数后天然就会有一段时间是不变的状态，uv的偏移量为<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">uvOffsetX &#x3D; adUVStep.y * step;</span><br><span class="line">uvOffsetY &#x3D; adUVStep.x * int(step &#x2F; _Column); &#x2F;&#x2F;以2行2列为例，0~4 除以2 取商，0~1得0，2~3得1</span><br></pre></td></tr></table></figure></p>
+<p>在time为 0~1，4~5……时，step为0，uv不变，处于1区域。<br>当time为1~2，5~6……时，step为1，u加一个单位，v不变，此时处于2区域。<br>当time为2~3，6~7……时，step为2，u再加一个单位，此时u已经超出（0~1）的范围，要达到正确结果，贴图的边界模式要设置的为repeat；v加一个单位，此时其实不处于3区域，处于3’区域，但是结果是一样的，如图2：</p>
+<p><img src="https://tva3.sinaimg.cn/large/bd728842gy1gm9hd4avlxj21kw0sgjtl.jpg" alt=""><br>图2</p>
+<p>所以最终其实是采样的1、2、3’、4’区域。</p>
+<h4 id="平移切换"><a href="#平移切换" class="headerlink" title="平移切换"></a>平移切换</h4><p>上一个切换方式是瞬间变化到下一个区域，现在需要从一个区域平移到另一个区域。那么需要有一个值来决定，什么时候开始平移 <code>_GradientTime</code>，并且要计算出一个从开始变化到变换结束的一个0~1的范围，如图3：</p>
+<p><img src="https://tvax4.sinaimg.cn/large/bd728842gy1gm9hd77ty7j20pv0i60ux.jpg" alt=""><br>图3</p>
+<p>这个从0到1变换的计算为 <code>b-a/(c-a)</code>，</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">decimalTime &#x3D; frac(time);   &#x2F;&#x2F; 时间取小数</span><br><span class="line">timeCompensate &#x3D; (1 &#x2F; (1 - _GradientTime)); &#x2F;&#x2F;  时间加快的倍率为 进行变化使用的时间的倒数</span><br><span class="line">if ((step + 1) % _Column !&#x3D; 0 || _Row &#x3D;&#x3D; 1)  &#x2F;&#x2F; 有多行的广告贴图，u向边界 1 处的图不进行平移变换</span><br><span class="line">&#123;</span><br><span class="line">    if (decimalTime &gt; _GradientTime)</span><br><span class="line">    &#123;</span><br><span class="line">        &#x2F;&#x2F;check &#x3D; float3(0, 1, 0);</span><br><span class="line">        uvOffsetX &#x3D; adUVStep.y * (step + frac((decimalTime - _GradientTime) * timeCompensate));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>第一行的末尾与第二行的起始不能通过平移来进行变换，所以使用平移变换是图片内容最好只有一行或者一列。</p>
+<h4 id="渐变切换"><a href="#渐变切换" class="headerlink" title="渐变切换"></a>渐变切换</h4><p>有了平移变换之后，现在希望平移这段过程改为一个渐入渐出的效果。<br>首先渐入渐出就需要两张图片内容，一个渐入前，一个渐出后，这个可以通过直接变换的计算过程提前获取下一个区域的uv。<br>然后就是渐变过程，这个过程所处的时间段和平移变换的是同一个时间段，即图3中a~c这一段，将这段时间分为两部分，前一部分用于将区域1渐入到黑色，后一部分用于将黑色渐出到区域2。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">float switchTime &#x3D; frac((decimalTime - _GradientTime) * timeCompensate);</span><br><span class="line">float4 black &#x3D; float4(0, 0, 0, 1);</span><br><span class="line">if (switchTime &lt;&#x3D; 0.5)</span><br><span class="line">&#123;</span><br><span class="line">    albedo &#x3D; lerp(ad1, black, saturate(2 * switchTime));</span><br><span class="line">&#125;</span><br><span class="line">else</span><br><span class="line">&#123;</span><br><span class="line">    albedo &#x3D; lerp(black, ad2, saturate(2 * switchTime - 1));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h3><p>上述渐变过程是以黑色作为过渡，还可以用噪声图之类的作为过渡。另外还可以在整体添加噪声图、扰动图、LED块图等效果，模拟广告牌的质感。</p>
+
       
     </div>
 
@@ -425,7 +447,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-11-14 16:20:35" itemprop="dateModified" datetime="2020-11-14T16:20:35+08:00">2020-11-14</time>
+                <time title="Modified: 2021-01-02 17:34:59" itemprop="dateModified" datetime="2021-01-02T17:34:59+08:00">2021-01-02</time>
               </span>
 
           
@@ -443,19 +465,19 @@
 <script type="math/tex; mode=display">{z}' = -z\frac{(F+N)}{F-N} - \frac{2\cdot N\cdot F}{F-N}</script><p>其中${z}’$为裁剪空间的深度值，$z$为观察空间的深度值，$F$为远裁剪面，$N$为近裁剪面。</p>
 <p>裁剪空间到屏幕空间会进行一次透视除法，再做一次缩放平移，所以在计算中最终会用到的clipPos.z（片段着色器中）最终为：</p>
 <script type="math/tex; mode=display">clipZ = (\frac{(F+N)}{F-N} - \frac{2\cdot N\cdot F}{(F-N)\cdot z})\cdot 0.5 + 0.5</script><p>取《Shader入门精要》的案例，F=40，N=5<br>如图，紫线为最终结果，可以看到clipZ是非线性的，值域在（0，1）。横轴为观察空间Z值，为负数；纵轴为屏幕空间Z值</p>
-<p><img src="/images/depth/depth0.jpg" alt=""></p>
+<p><img src="https://tvax2.sinaimg.cn/large/bd728842gy1gm9hf5udqzj20ry0g5tb8.jpg" alt=""></p>
 <hr>
 <p>Unity Shader的计算中，涉及到深度的计算，通常会用到<strong>LinearEyeDepth</strong>和<strong>Linear01Depth</strong>，<strong>LinearEyeDepth</strong>的计算为：</p>
 <script type="math/tex; mode=display">z = \frac{1}{\frac{1-\frac{F}{N}}{F}\cdot z+\frac{\frac{F}{N}}{F}}</script><p>开启UNITY_REVERSED_Z时（UNITY_REVERSED_Z表示$z = 1-z$,用于调和float的存储精度以及非线性的z值分布，使存储的z值更精确，减轻z-fightingh问题），计算方式为：</p>
 <script type="math/tex; mode=display">z = \frac{1}{\frac{-1+\frac{F}{N}}{F}\cdot z+\frac{1}{F}}</script><p>两者实际效果是一样的，区别在于输入的$z$是不是反转的。</p>
 <p>如图，蓝线为最终结果，输入为紫线的值，可以看到<strong>LinearEyeDepth</strong>将紫线变为线性的，并且值域为（$N$，$F$）,深度0的位置在相机位置。</p>
-<p><img src="/images/depth/depth1.png" alt=""></p>
+<p><img src="https://tva4.sinaimg.cn/large/bd728842gy1gm9hf8bumaj20od0mb3zz.jpg" alt=""></p>
 <hr>
 <p><strong>Linear01Depth</strong>的计算为：</p>
 <script type="math/tex; mode=display">z = \frac{1}{({1-\frac{F}{N}})\cdot z + \frac{F}{N}}</script><p>开启UNITY_REVERSED_Z时，计算方式为：</p>
 <script type="math/tex; mode=display">z = \frac{1}{({-1+\frac{F}{N}})\cdot z + 1}</script><p>两者实际效果是一样的，区别在于输入的$z$是不是反转的。</p>
 <p>如图，绿线为最终结果，输入为紫线的值，可以看到<strong>Linear01Depth</strong>将紫线变为线性的，并且值域为（0.125，1），深度0的位置在相机位置。</p>
-<p><img src="/images/depth/depth2.png" alt=""></p>
+<p><img src="https://tva3.sinaimg.cn/large/bd728842gy1gm9hfb7dw1j21ha080q42.jpg" alt=""></p>
 <h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p>《Unity Shader入门精要》 冯乐乐</p>
 
       
@@ -916,7 +938,7 @@
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2020</span>
+  <span itemprop="copyrightYear">2021</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>

@@ -26,14 +26,14 @@
 <meta property="og:site_name" content="ZxPiano">
 <meta property="og:description" content="深度Unity中，透视投影，观察空间变换到裁剪空间后，深度值会变成非线性的。计算过程如下。 {z}&#39; &#x3D; -z\frac{(F+N)}{F-N} - \frac{2\cdot N\cdot F}{F-N}其中${z}’$为裁剪空间的深度值，$z$为观察空间的深度值，$F$为远裁剪面，$N$为近裁剪面。 裁剪空间到屏幕空间会进行一次透视除法，再做一次缩放平移，所以在计算中最终会用到的clipPos.">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="http://yoursite.com/images/depth/depth0.jpg">
-<meta property="og:image" content="http://yoursite.com/images/depth/depth1.png">
-<meta property="og:image" content="http://yoursite.com/images/depth/depth2.png">
+<meta property="og:image" content="https://tvax2.sinaimg.cn/large/bd728842gy1gm9hf5udqzj20ry0g5tb8.jpg">
+<meta property="og:image" content="https://tva4.sinaimg.cn/large/bd728842gy1gm9hf8bumaj20od0mb3zz.jpg">
+<meta property="og:image" content="https://tva3.sinaimg.cn/large/bd728842gy1gm9hfb7dw1j21ha080q42.jpg">
 <meta property="article:published_time" content="2020-10-11T14:45:00.000Z">
-<meta property="article:modified_time" content="2020-11-14T08:20:35.770Z">
+<meta property="article:modified_time" content="2021-01-02T09:34:59.152Z">
 <meta property="article:author" content="ZxPiano">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://yoursite.com/images/depth/depth0.jpg">
+<meta name="twitter:image" content="https://tvax2.sinaimg.cn/large/bd728842gy1gm9hf5udqzj20ry0g5tb8.jpg">
 
 <link rel="canonical" href="http://yoursite.com/2020/10/11/depth/">
 
@@ -184,7 +184,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-11-14 16:20:35" itemprop="dateModified" datetime="2020-11-14T16:20:35+08:00">2020-11-14</time>
+                <time title="Modified: 2021-01-02 17:34:59" itemprop="dateModified" datetime="2021-01-02T17:34:59+08:00">2021-01-02</time>
               </span>
 
           
@@ -202,19 +202,19 @@
 <script type="math/tex; mode=display">{z}' = -z\frac{(F+N)}{F-N} - \frac{2\cdot N\cdot F}{F-N}</script><p>其中${z}’$为裁剪空间的深度值，$z$为观察空间的深度值，$F$为远裁剪面，$N$为近裁剪面。</p>
 <p>裁剪空间到屏幕空间会进行一次透视除法，再做一次缩放平移，所以在计算中最终会用到的clipPos.z（片段着色器中）最终为：</p>
 <script type="math/tex; mode=display">clipZ = (\frac{(F+N)}{F-N} - \frac{2\cdot N\cdot F}{(F-N)\cdot z})\cdot 0.5 + 0.5</script><p>取《Shader入门精要》的案例，F=40，N=5<br>如图，紫线为最终结果，可以看到clipZ是非线性的，值域在（0，1）。横轴为观察空间Z值，为负数；纵轴为屏幕空间Z值</p>
-<p><img src="/images/depth/depth0.jpg" alt=""></p>
+<p><img src="https://tvax2.sinaimg.cn/large/bd728842gy1gm9hf5udqzj20ry0g5tb8.jpg" alt=""></p>
 <hr>
 <p>Unity Shader的计算中，涉及到深度的计算，通常会用到<strong>LinearEyeDepth</strong>和<strong>Linear01Depth</strong>，<strong>LinearEyeDepth</strong>的计算为：</p>
 <script type="math/tex; mode=display">z = \frac{1}{\frac{1-\frac{F}{N}}{F}\cdot z+\frac{\frac{F}{N}}{F}}</script><p>开启UNITY_REVERSED_Z时（UNITY_REVERSED_Z表示$z = 1-z$,用于调和float的存储精度以及非线性的z值分布，使存储的z值更精确，减轻z-fightingh问题），计算方式为：</p>
 <script type="math/tex; mode=display">z = \frac{1}{\frac{-1+\frac{F}{N}}{F}\cdot z+\frac{1}{F}}</script><p>两者实际效果是一样的，区别在于输入的$z$是不是反转的。</p>
 <p>如图，蓝线为最终结果，输入为紫线的值，可以看到<strong>LinearEyeDepth</strong>将紫线变为线性的，并且值域为（$N$，$F$）,深度0的位置在相机位置。</p>
-<p><img src="/images/depth/depth1.png" alt=""></p>
+<p><img src="https://tva4.sinaimg.cn/large/bd728842gy1gm9hf8bumaj20od0mb3zz.jpg" alt=""></p>
 <hr>
 <p><strong>Linear01Depth</strong>的计算为：</p>
 <script type="math/tex; mode=display">z = \frac{1}{({1-\frac{F}{N}})\cdot z + \frac{F}{N}}</script><p>开启UNITY_REVERSED_Z时，计算方式为：</p>
 <script type="math/tex; mode=display">z = \frac{1}{({-1+\frac{F}{N}})\cdot z + 1}</script><p>两者实际效果是一样的，区别在于输入的$z$是不是反转的。</p>
 <p>如图，绿线为最终结果，输入为紫线的值，可以看到<strong>Linear01Depth</strong>将紫线变为线性的，并且值域为（0.125，1），深度0的位置在相机位置。</p>
-<p><img src="/images/depth/depth2.png" alt=""></p>
+<p><img src="https://tva3.sinaimg.cn/large/bd728842gy1gm9hfb7dw1j21ha080q42.jpg" alt=""></p>
 <h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p>《Unity Shader入门精要》 冯乐乐</p>
 
     </div>
@@ -353,7 +353,7 @@
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2020</span>
+  <span itemprop="copyrightYear">2021</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
